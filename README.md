@@ -15,7 +15,7 @@ viewer.py \[-hd|--header\] \[-re|--regex\] \[-s|--search column:row\] filename
     * python viewer.py --header -re -s county:CLAY*
 
 
-# PLANNED ADDITIONS
+# Planned Additions
 
 * Migration to python3
 * Proper logging information
