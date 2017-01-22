@@ -54,7 +54,7 @@ class Reader(object):
         self.buffer_size = 1                # size of buffer to store in memory (in MB)
 
         self.filename = filename            # path to filename
-        self.handle = open(filename)        # file handle, keep file open
+        self.handle = open(filename, 'rU')  # file handle, keep file open
 
         self.buffer = None                  # current buffer
 
@@ -79,8 +79,8 @@ class Reader(object):
         self.remaining_size = self.filesize
         self.handle.seek(0, os.SEEK_SET)
 
-        #self.PrintState()
         self.ReadNextBuffer()
+
 
     def PrintState(self):
         #print '    chunk-size', self.chunk_size
@@ -104,12 +104,11 @@ class Reader(object):
 
         data = self.handle.read(self.buffer_size)
         lines = data.split('\n')
+
         self.remaining_size = self.filesize - self.buffer_size
 
         if self.remaining_size < 0:
             self.remaining_size = 0
-        print('HERE')
-        print(self.remaining_size)
 
         # add trailing lines from previous buffer
         if self.trailing_line:

@@ -4,9 +4,8 @@
 """
 
 import wx
-import re, os, sys
-import fileinput
-import argparse
+import re
+import os, sys
 
 from reader import Reader
 
@@ -139,6 +138,7 @@ class Viewer(wx.Frame):
         for i, line in enumerate(chunk):
             data[i] = line.rstrip().split(',')
         self.data = data
+        # print 'read data', len(data.keys())
 
 
     def ShowData(self):
@@ -170,6 +170,8 @@ class Viewer(wx.Frame):
 
         if self.searchText:
             self.OnSearch()
+
+        self.text.SetLabel("Showing %i items" % (self.list.GetItemCount()))
 
 
 
@@ -286,6 +288,7 @@ class Viewer(wx.Frame):
     def OnForward(self, e=None):
         """ Called when Forward button is pressed """
         chunk = self.reader.Next()
+
         if chunk:
             self.ReadData(chunk)
             self.ShowData()
