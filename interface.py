@@ -6,6 +6,7 @@
 import wx
 import re
 import os, sys
+import logging
 
 from reader import Reader
 
@@ -34,6 +35,8 @@ class Viewer(wx.Frame):
     def __init__(self, args):
 
         ## define class attributes
+        self.logger = logging.getLogger("Viewer")
+
         self.data   = None           # current data to show
         self.header = None           # first line of file to use as header
         self.title  = None           # filename
@@ -138,7 +141,6 @@ class Viewer(wx.Frame):
         for i, line in enumerate(chunk):
             data[i] = line.rstrip().split(',')
         self.data = data
-        # print 'read data', len(data.keys())
 
 
     def ShowData(self):
@@ -226,7 +228,6 @@ class Viewer(wx.Frame):
         for key, row in items:
             match = False
             if self.useRegex:
-                print row, column
                 match = pattern.match(row[column])
             elif row[column] == pattern:
                 match = True

@@ -13,7 +13,7 @@ This should be done without loading the entire file into memory.
 """
 
 import os
-import sys
+import logging
 
 
 
@@ -46,9 +46,23 @@ Example:
 """
 
 
+### Current issues:
+# Trailing lines when reading buffers backwards
+# Works well at the end edge, but not all the way to the beginning
+
+
+#offset = 0
+#file_size = fh.seek(0, os.SEEK_END)
+#total_size = remaining_size = fh.tell()
+
+
+
+
 class Reader(object):
 
     def __init__(self, filename):
+
+        self.logger = logging.getLogger("Reader")
 
         self.chunk_size  = 1000             # size to chunks of data to return (number of lines)
         self.buffer_size = 1                # size of buffer to store in memory (in MB)
@@ -86,8 +100,8 @@ class Reader(object):
         #print '    chunk-size', self.chunk_size
         #print '    buffer-size', self.buffer_size
         #print '    filesize', self.filesize
-        print '    position', self.position
-        print '    buffer length', len(self.buffer)
+        self.logger.debug('position {0}'.format(self.position))
+        self.logger.debug('buffer length {0}'.format(len(self.buffer)))
 
 
     def ReadNextBuffer(self):
@@ -96,11 +110,10 @@ class Reader(object):
         ## Clear current buffer here???
         # Do this to avoid having two buffers in memory
 
-        print '    read buffer forward'
-
         self.current_buffer += 1
 
-        print '    loading buffer', self.current_buffer
+        self.logger.debug('read buffer forward')
+        self.logger.debug('loading buffer {0}'.format(self.current_buffer))
 
         data = self.handle.read(self.buffer_size)
         lines = data.split('\n')
@@ -142,16 +155,18 @@ class Reader(object):
         ### Two blocks from the file
         # We need to find the trailing buffer/lines from the previous buffer
 
-        print '    read buffer BACKWARD'
-
         self.current_buffer -= 1
-        print '    loading buffer', self.current_buffer
+
+        self.logger.debug('read buffer BACKWARD')
+        self.logger.debug('loading buffer {0}'.format(self.current_buffer))
 
         current_position = self.handle.tell()
 
         # find trailing buffer from previous buffer
         backward_position = max(0, current_position - (self.buffer_size*3))
-        print 'backward position', backward_position
+        
+        self.logger.debug('backward position {0}'.format(backward_position))
+
 
         if self.current_buffer > 1: 
             self.handle.seek(backward_position)
@@ -195,7 +210,8 @@ class Reader(object):
         self.buffer = self.buffer[:bufflines]
 
         self.position = len(self.buffer)
-        print self.buffer_info[self.current_buffer], len(self.buffer)
+
+        self.logger.debug('{0} {1}'.format(self.buffer_info[self.current_buffer], len(self.buffer)))
 
 
 
@@ -210,7 +226,7 @@ class Reader(object):
 
 
         self.PrintState()
-        print '    end position', end_position
+        self.logger.debug('end position {0}'.format(end_position))
 
         if end_position > len(self.buffer):
             # either need to move buffer or we are at the end of file
@@ -221,9 +237,12 @@ class Reader(object):
                 end_position = self.position + self.chunk_size
 
         chunk = self.buffer[self.position:end_position]
-        print '    visualize %i:%i' % (self.position, end_position)
+
+        self.logger.debug('visualize {0}:{1}'.format(self.position, end_position))
+        
         self.position = end_position
         self.previous_direction = 1
+        
         return chunk
 
 
@@ -237,9 +256,8 @@ class Reader(object):
         end_position = self.position - self.chunk_size
 
         self.PrintState()
-        print '    end position', end_position
-
-        print '    rem size', self.remaining_size, self.filesize
+        self.logger.debug('end position {0}'.format(end_position))
+        self.logger.debug('rem size {0} {1}'.format(self.remaining_size, self.filesize))
 
         if end_position < 0:
             # either need to move buffer backwards or we are at the beginning of file
@@ -250,63 +268,12 @@ class Reader(object):
                 end_position = self.position - self.chunk_size
  
         chunk = self.buffer[end_position:self.position]
-        print '    visualize %i:%i' % (end_position, self.position)
+        
+        self.logger.debug('visualize {0}:{1}'.format(self.position, end_position))
+        
         self.position = end_position
         self.previous_direction = -1
 
         return chunk
 
-
-
-
-def main(filename):
-
-    # this function for testing/debugging purposes only -- to be removed
-    import fileinput
-    truth = [line.rstrip() for line in fileinput.input(filename)]
-    
-    #import random
-
-    rd = Reader(filename)
-
-    """
-    for i in range(10000):
-        direction = random.random()
-        if direction > 0.5:
-            print 'start FORWARD CALL', i+1
-            chunk = rd.Next()
-        else:
-            print 'start BACKWARD CALL', i+1
-            chunk = rd.Previous()
-    print '    after -> position:', rd.position, len(chunk)
-    """
-
-    """
-    data = []
-    for i in range(50):
-        data.extend(rd.Next())
-
-    for i in range(len(data)):
-        if data[i] != truth[i]:
-            print i
-    """
-
-
-    ### Current issues:
-    # Trailing lines when reading buffers backwards
-    # Works well at the end edge, but not all the way to the beginning
-
-
-    #offset = 0
-    #file_size = fh.seek(0, os.SEEK_END)
-    #total_size = remaining_size = fh.tell()
-
-    #print file_size
-    #print total_size
-
-
-
-#if __name__ == "__main__":
-    #filename = ''
-    #main(filename)
 
