@@ -159,13 +159,13 @@ class Viewer(wx.Frame):
 
         # insert rows
         for key, row in items:
-            index = self.list.InsertStringItem(sys.maxint, row[0])
+            index = self.list.InsertItem(sys.maxint, row[0])
             for i, item in enumerate(row[1:]):
-                self.list.SetStringItem(index, i+1, row[i+1])
+                self.list.SetItem(index, i+1, row[i+1])
             self.list.SetItemData(index, key)
 
-            if index % 2:
-                self.list.SetItemBackgroundColour(index, wx.Colour(242, 242, 242))
+            # if index % 2:
+            #    self.list.SetItemBackgroundColour(index, wx.Colour(242, 242, 242))
 
         if self.useHeader:
             self.OnUseHeader()
@@ -200,9 +200,9 @@ class Viewer(wx.Frame):
                 self.list.DeleteItem(hindex)
             # else couldn't find header, so do nothing
         else:
-            index = self.list.InsertStringItem(0, header_labels[0])
+            index = self.list.InsertItem(0, header_labels[0])
             for i, item in enumerate(header_labels[1:]):
-                self.list.SetStringItem(index, i+1, header_labels[i+1])
+                self.list.SetItem(index, i+1, header_labels[i+1])
             self.list.SetItemData(index, 0)
 
         self.text.SetLabel("Showing %i items" % (self.list.GetItemCount()))
@@ -233,9 +233,9 @@ class Viewer(wx.Frame):
                 match = True
 
             if match:
-                index = self.list.InsertStringItem(sys.maxint, row[0])
+                index = self.list.InsertItem(sys.maxint, row[0])
                 for i, item in enumerate(row[1:]):
-                    self.list.SetStringItem(index, i+1, row[i+1])
+                    self.list.SetItem(index, i+1, row[i+1])
                 self.list.SetItemData(index, key)
 
         # use header if box is checked
