@@ -1,0 +1,6 @@
+{
+    "buffer_size": 5,
+    "chunk_size":  10000,
+    "header": false,
+    "separator": ","
+}

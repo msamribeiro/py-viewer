@@ -5,6 +5,7 @@ Simple CSV viewer for large files.
 
 import wx
 import os, sys
+import json
 import argparse
 import logging
 
@@ -24,10 +25,23 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # make sure given filename and default config exist
     if not os.path.isfile(args.filename):
         logging.critical('Could not find filename {0}'.format(args.filename))
-        sys.exit()
+        sys.exit(1)
+
+    if not os.path.isfile('conf.json'):
+        logging.critical('Could not find default config file conf.json')
+        sys.exit(1)
+
+    # load default configuration options
+    with open('conf.json') as fid:
+        config = json.load(fid)
+
+    # overwrite default config with given arguments
+    for key, value in vars(args).items():
+        config[key] = value
 
     app = wx.App()
-    Viewer(args)
+    Viewer(config)
     app.MainLoop()

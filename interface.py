@@ -32,7 +32,7 @@ class NewListCtrl(wx.ListCtrl, ColumnSorterMixin, ListCtrlAutoWidthMixin):
 
 class Viewer(wx.Frame):
     """ TODO """
-    def __init__(self, args):
+    def __init__(self, config):
 
         ## define class attributes
         self.logger = logging.getLogger("Viewer")
@@ -41,21 +41,22 @@ class Viewer(wx.Frame):
         self.header = None           # first line of file to use as header
         self.title  = None           # filename
 
-        self.useHeader  = args.header    # if using first line as header
-        self.useRegex   = args.regex     # if searching with regular expression
-        self.searchText = args.search    # initial search string (may be empty)
+        self.useHeader  = config['header']         # if using first line as header
+        self.useRegex   = config['regex']          # if searching with regular expression
+        self.searchText = config['search']         # initial search string (may be empty)
+        self.separator  = str(config['separator'])   # column separator (e.g. comma, tab, space)
 
         self.text = None           # search box object
         self.regex_text = None     # regex checkbox object
         self.header_box = None     # header checkbox object
 
-        self.reader = Reader(args.filename)
+        self.reader = Reader(config)
 
         chunk = self.reader.next()
         self.ReadData(chunk)
 
         self.header = self.data[0]
-        self.title = args.filename.split('/')[-1]
+        self.title = config['filename'].split('/')[-1]
 
         self.InitViewer()
 
@@ -139,7 +140,7 @@ class Viewer(wx.Frame):
 
         data = {}
         for i, line in enumerate(chunk):
-            data[i] = line.rstrip().split(',')
+            data[i] = line.rstrip().split(self.separator)
         self.data = data
 
 
@@ -242,7 +243,7 @@ class Viewer(wx.Frame):
         if self.useHeader:
             self.ToggleHeader(header=True)
 
-        self.text.SetLabel("Showing %i items" % (self.list.GetItemCount()))
+        self.text.SetLabel("Showing {0} items".format(self.list.GetItemCount()))
 
 
     def OnUseHeader(self, e=None):

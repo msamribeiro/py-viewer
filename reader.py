@@ -11,17 +11,19 @@ import logging
 
 class Reader(object):
 
-    def __init__(self, filename):
+    def __init__(self, config):
 
         self.logger = logging.getLogger("Reader")
 
-        self.buffer_size = 10                # size of buffer to store in memory (in MB)
-        self.chunk_size  = 1000             # size to chunks of data to return (number of lines)
+        # size of buffer to store in memory (in MB)
+        self.buffer_size = config['buffer_size']
+        # size of chunk of data -- number of lines
+        self.chunk_size  = config['chunk_size']
 
-        self.filename = filename            # path to filename
+        self.filename = config['filename']  # path to filename
         self.buffer = None                  # current buffer
         self.total_lines = 0                # number of lines in buffer
-        self.position = 0                   # current line in buffer
+        self.current_line = 0               # current line in buffer
 
         self.__read_buffer()
 
@@ -63,7 +65,7 @@ class Reader(object):
         ''' Read next chunk of the buffer.
             If we are at the end, we just return the last chunk
         '''
-        current_position = self.position
+        current_position = self.current_line
         total_lines = self.total_lines
         chunk_size  = self.chunk_size
 
@@ -75,7 +77,7 @@ class Reader(object):
         if end > total_lines:
             end = total_lines
 
-        self.position = end
+        self.current_line = end
 
         return self.buffer[start:end]
 
@@ -83,7 +85,7 @@ class Reader(object):
         ''' Read previous chunk of the buffer.
             If we are at the beginning, we just return the first chunk
         '''
-        current_position = self.position
+        current_position = self.current_line
         chunk_size  = self.chunk_size
 
         start = current_position - chunk_size
@@ -91,7 +93,7 @@ class Reader(object):
             start = 0
 
         end = start + chunk_size
-        self.position = end
+        self.current_line = end
         return self.buffer[start:end]
 
 
