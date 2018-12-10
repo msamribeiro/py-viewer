@@ -51,7 +51,7 @@ class Viewer(wx.Frame):
 
         self.reader = Reader(args.filename)
 
-        chunk = self.reader.Next()
+        chunk = self.reader.next()
         self.ReadData(chunk)
 
         self.header = self.data[0]
@@ -280,7 +280,7 @@ class Viewer(wx.Frame):
 
     def OnBackward(self, e=None):
         """ Called when Backward button is pressed """
-        chunk = self.reader.Previous()
+        chunk = self.reader.previous()
         if chunk:
             self.ReadData(chunk)
             self.ShowData()
@@ -288,7 +288,7 @@ class Viewer(wx.Frame):
 
     def OnForward(self, e=None):
         """ Called when Forward button is pressed """
-        chunk = self.reader.Next()
+        chunk = self.reader.next()
 
         if chunk:
             self.ReadData(chunk)
