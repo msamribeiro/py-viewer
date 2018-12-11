@@ -6,6 +6,7 @@ Reads head of CSV from file and manages it for the interface.
 """
 
 import os
+import sys
 import logging
 
 
@@ -19,6 +20,8 @@ class Reader(object):
         self.buffer_size = config['buffer_size']
         # size of chunk of data -- number of lines
         self.chunk_size  = config['chunk_size']
+
+        self.separator  = str(config['separator'])
 
         self.filename = config['filename']  # path to filename
         self.buffer = None                  # current buffer
@@ -57,8 +60,24 @@ class Reader(object):
         if self.chunk_size > self.total_lines:
             self.chunk_size = self.total_lines
 
+        self.__validate_buffer()
+
         self.logger.info('Loaded {0} lines to buffer'.format(self.total_lines))
         self.logger.info('Buffer size: {0} MB, File size {1} MB'.format(self.buffer_size, self.file_size))
+
+
+    def __validate_buffer(self):
+        separator = self.separator
+
+        first_line = self.buffer[0]
+        n_cols = len( first_line.rstrip().split(self.separator) )
+
+        for i, line in enumerate(self.buffer):
+             cols = len( line.rstrip().split(self.separator))
+
+             if cols != n_cols:
+                self.logger.critical('Mismatch number of columns at line {0}'.format(i))
+                sys.exit(1)
 
 
     def next(self):
