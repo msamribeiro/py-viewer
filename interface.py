@@ -44,7 +44,11 @@ class Viewer(wx.Frame):
         self.useHeader  = config['header']         # if using first line as header
         self.useRegex   = config['regex']          # if searching with regular expression
         self.searchText = config['search']         # initial search string (may be empty)
+        self.highlight  = config['highlightLines'] # highlight alternate lines
         self.separator  = str(config['separator'])   # column separator (e.g. comma, tab, space)
+
+        #self.highlight_color = wx.Colour(242, 242, 242)  # light gray for light themes
+        self.highlight_color = wx.Colour(32, 32, 32)      # dark gray for dark themes
 
         self.text = None           # search box object
         self.regex_text = None     # regex checkbox object
@@ -160,13 +164,15 @@ class Viewer(wx.Frame):
 
         # insert rows
         for key, row in items:
+
             index = self.list.InsertItem(sys.maxint, row[0])
             for i, item in enumerate(row[1:]):
                 self.list.SetItem(index, i+1, row[i+1])
             self.list.SetItemData(index, key)
 
-            # if index % 2:
-            #    self.list.SetItemBackgroundColour(index, wx.Colour(242, 242, 242))
+            if self.highlight:
+                if index % 2:
+                    self.list.SetItemBackgroundColour(index, self.highlight_color)
 
         if self.useHeader:
             self.OnUseHeader()
