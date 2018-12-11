@@ -1,5 +1,6 @@
 #!/usr/bin/python
 """
+
 Reader for CSV files.
 Reads head of CSV from file and manages it for the interface.
 
@@ -29,10 +30,11 @@ class Reader(object):
         self.current_line = 0               # current line in buffer
 
         self.__read_buffer()
+        self.__validate_buffer()
 
 
     def __read_buffer(self):
-        """ read head of file into memory """
+        ''' read head of file into memory '''
 
         # filesize in Bytes
         file_size = os.path.getsize(self.filename)
@@ -60,13 +62,12 @@ class Reader(object):
         if self.chunk_size > self.total_lines:
             self.chunk_size = self.total_lines
 
-        self.__validate_buffer()
-
         self.logger.info('Loaded {0} lines to buffer'.format(self.total_lines))
         self.logger.info('Buffer size: {0} MB, File size {1} MB'.format(self.buffer_size, self.file_size))
 
 
     def __validate_buffer(self):
+        ''' make sure all lines have the same number of columns '''
         separator = self.separator
 
         first_line = self.buffer[0]

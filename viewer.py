@@ -1,6 +1,8 @@
 #!/usr/bin/python
 """
+
 Simple CSV viewer for large files.
+
 """
 
 import wx

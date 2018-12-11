@@ -1,6 +1,8 @@
 #!/usr/bin/python
 """
 
+Interface for viewer
+
 """
 
 import wx
@@ -15,7 +17,7 @@ from wx.lib.mixins.listctrl import ColumnSorterMixin
 
 
 class NewListCtrl(wx.ListCtrl, ColumnSorterMixin, ListCtrlAutoWidthMixin):
-    """ ListCtrl able to sort and managed width change """
+    ''' ListCtrl able to sort and manage width change '''
 
     def __init__(self, parent, data):
         wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
@@ -31,7 +33,8 @@ class NewListCtrl(wx.ListCtrl, ColumnSorterMixin, ListCtrlAutoWidthMixin):
 
 
 class Viewer(wx.Frame):
-    """ TODO """
+    ''' Viewer interface that displays tables '''
+
     def __init__(self, config):
 
         ## define class attributes
@@ -44,9 +47,10 @@ class Viewer(wx.Frame):
         self.useHeader  = config['header']         # if using first line as header
         self.useRegex   = config['regex']          # if searching with regular expression
         self.searchText = config['search']         # initial search string (may be empty)
-        self.highlight  = config['highlightLines'] # highlight alternate lines
         self.separator  = str(config['separator'])   # column separator (e.g. comma, tab, space)
 
+        # handle highlighting of alternate lines
+        self.highlight  = config['highlightLines']
         #self.highlight_color = wx.Colour(242, 242, 242)  # light gray for light themes
         self.highlight_color = wx.Colour(32, 32, 32)      # dark gray for dark themes
 
@@ -64,16 +68,10 @@ class Viewer(wx.Frame):
 
         self.InitViewer()
 
-        #if self.useHeader:
-        #    self.OnUseHeader()
-
-        #if self.searchText:
-        #    self.OnSearch()
-
 
 
     def InitViewer(self):
-        """ Create and initialize the CSV Viewer """
+        ''' Creates and initializes the Viewer '''
         wx.Frame.__init__(self, None, -1, self.title, size=(1250, 800))
 
         # main layout manager
@@ -140,7 +138,7 @@ class Viewer(wx.Frame):
         self.Show(True)
 
     def ReadData(self, chunk):
-        """ Read data from file """
+        ''' prepares data for viewing by finding columns '''
 
         data = {}
         for i, line in enumerate(chunk):
@@ -149,7 +147,7 @@ class Viewer(wx.Frame):
 
 
     def ShowData(self):
-        """ Show all data items in the list control """
+        ''' Show all data items in the list control '''
 
         # clear all items in the list, if they exist
         self.list.ClearAll()
