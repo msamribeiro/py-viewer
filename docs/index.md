@@ -1,4 +1,3 @@
-# PyViewer
 A basic viewer for large files.
 
 PyViewer loads the top N MB from a CSV-like file and displays it as a table for the user. It allows quick searching over the columns with regular expressions. 
