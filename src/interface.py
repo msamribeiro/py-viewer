@@ -238,7 +238,7 @@ class Viewer(wx.Frame):
                 match = True
 
             if match:
-                index = self.list.InsertItem(sys.maxint, row[0])
+                index = self.list.InsertItem(sys.maxsize, row[0])
                 for i, item in enumerate(row[1:]):
                     self.list.SetItem(index, i+1, row[i+1])
                 self.list.SetItemData(index, key)

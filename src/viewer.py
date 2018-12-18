@@ -36,6 +36,8 @@ if __name__ == "__main__":
         logging.critical('Could not find default config file conf.json')
         sys.exit(1)
 
+    print(os.path.realpath(__file__))
+
     # load default configuration options
     with open('conf.json') as fid:
         config = json.load(fid)
